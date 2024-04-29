@@ -31,3 +31,29 @@ resource "azurerm_subnet" "subnet1" {
   address_prefixes     = ["10.0.1.0/24"]
 }
 
+
+resource "azurerm_linux_virtual_machine" "VM1" {
+  name                = "${var.prefix}-machine"
+  resource_group_name = data.zurerm_resource_group.RG1.name
+  location            = data.azurerm_resource_group.RG1.location
+  size                = "Standard_F2"
+  admin_username      = "adminuser"
+
+
+  admin_ssh_key {
+    username   = "adminuser"
+    public_key = file("~/.ssh/id_rsa.pub")
+  }
+
+  os_disk {
+    caching             = "ReadWrite"
+    storage_account_type = "Standard_LRS"
+  }
+
+  source_image_reference {
+    publisher = "RedHat"
+    offer     = "rhel-byos"
+    sku       = "7-raw"
+    version   = "latest"
+  }
+}
