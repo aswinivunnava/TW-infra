@@ -56,4 +56,14 @@ resource "azurerm_linux_virtual_machine" "VM1" {
     sku       = "7-raw"
     version   = "latest"
   }
+   provisioner "file" {
+    source = "./provision-quotes.sh"
+    destination = "~/provisioner-os-package.sh"
+  }
+  provisioner "remote-exec" {
+    inline = [
+      "chmod +x ~/provision.sh",
+      "~/provisioner-os-package.sh"
+    ]
+  }
 }
