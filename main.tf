@@ -66,4 +66,14 @@ resource "azurerm_linux_virtual_machine" "VM1" {
       "~/provisioner-os-package.sh"
     ]
   }
+  provisioner "file" {
+    source      = "./db.sql"
+    destination = "~/db.sql"
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "mysql -u root -p < ~/db.sql "
+    ]
+  }
 }
