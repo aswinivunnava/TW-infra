@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 echo "Disabling SELinux..."
 sudo sed -i 's/^SELINUX=.*/SELINUX=disabled/' /etc/selinux/config
