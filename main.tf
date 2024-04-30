@@ -80,6 +80,7 @@ resource "azurerm_linux_virtual_machine" "VM1" {
       "tar -zxf ~/mediawiki-1.41.1.tar.gz"
       "ln -s mediawiki-1.41.1/ mediawiki"
       "chown -R apache:apache /var/www/mediawiki-1.41.1"
+      "service httpd restart"
     ]
   }
 }
