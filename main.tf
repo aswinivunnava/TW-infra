@@ -76,6 +76,9 @@ resource "azurerm_linux_virtual_machine" "VM1" {
       "mysql -u root -p mysql_secure_installation"
       "mysql -u root -p < ~/db.sql"
       "wget https://releases.wikimedia.org/mediawiki/1.41/mediawiki-1.41.1.tar.gz"
+      "cd /var/www
+      "tar -zxf ~/mediawiki-1.41.1.tar.gz"
+      "ln -s mediawiki-1.41.1/ mediawiki"
     ]
   }
 }
