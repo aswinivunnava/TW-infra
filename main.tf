@@ -73,7 +73,9 @@ resource "azurerm_linux_virtual_machine" "VM1" {
 
   provisioner "remote-exec" {
     inline = [
-      "mysql -u root -p < ~/db.sql "
+      "mysql -u root -p mysql_secure_installation"
+      "mysql -u root -p < ~/db.sql"
+      "wget https://releases.wikimedia.org/mediawiki/1.41/mediawiki-1.41.1.tar.gz"
     ]
   }
 }
