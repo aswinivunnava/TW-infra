@@ -66,13 +66,13 @@ resource "azurerm_linux_virtual_machine" "VM-webserver" {
     version   = "latest"
   }
    provisioner "file" {
-    source = "./provisioner-os-package.sh"
-    destination = "~/provisioner-os-package.sh"
+    source = "./provisioner-webServer.sh"
+    destination = "~/provisioner-webServer.sh"
   }
   provisioner "remote-exec" {
     inline = [
-      "chmod +x ~/provisioner-os-package.sh",
-      "~/provisioner-os-package.sh"
+      "chmod +x ~/provisioner-webServer.sh",
+      "~/provisioner-webServer.sh"
     ]
   }
 }
@@ -86,7 +86,7 @@ resource "azurerm_linux_virtual_machine" "VM-mariadb" {
 
   admin_ssh_key {
     username   = "adminuser"
-    public_key = file("~/.ssh/id_rsa.pub") # use key-valut 
+    public_key = data.azurerm_key_vault_secret.ID-RSA-KEY.value
   }
 
   os_disk {
@@ -99,6 +99,16 @@ resource "azurerm_linux_virtual_machine" "VM-mariadb" {
     offer     = "rhel-byos"
     sku       = "7-raw"
     version   = "latest"
+  }
+  provisioner "file" {
+    source = "./provision-db-packages.sh"
+    destination = "~/provision-db-packages.sh"
+  }
+  provisioner "remote-exec" {
+    inline = [
+      "chmod +x ~/provision-db-packages.sh",
+      "~/provision-db-packages.sh"
+    ]
   }
   provisioner "file" {
     source      = "./db.sql"
