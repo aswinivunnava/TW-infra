@@ -65,14 +65,30 @@ resource "azurerm_linux_virtual_machine" "VM-webserver" {
     sku       = "7-raw"
     version   = "latest"
   }
-   provisioner "file" {
+  provisioner "file" {
     source = "./provisioner-webServer.sh"
     destination = "~/provisioner-webServer.sh"
+  }
+  provisioner "file" {
+    source = "./MediaWiki-download.sh"
+    destination = "~/MediaWiki-download.sh"
+  }
+  provisioner "file" {
+    source = "./firewall.sh"
+    destination = "~/firewall.sh"
+  }
+  provisioner "file" {
+    source = "./selinux-disabling.sh"
+    destination = "~/selinux-disabling.sh"
   }
   provisioner "remote-exec" {
     inline = [
       "chmod +x ~/provisioner-webServer.sh",
       "~/provisioner-webServer.sh"
+      "chmod +x ~/MediaWiki-download.sh",
+      "~/MediaWiki-download.sh"
+      "chmod +x ~/firewall.sh",
+      "~/firewall.sh"
     ]
   }
 }
