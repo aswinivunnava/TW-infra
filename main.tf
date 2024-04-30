@@ -32,9 +32,9 @@ resource "azurerm_subnet" "subnet1" {
 }
 
 
-resource "azurerm_linux_virtual_machine" "VM1" {
-  name                = "${var.prefix}-machine"
-  resource_group_name = data.zurerm_resource_group.RG1.name
+resource "azurerm_linux_virtual_machine" "VM-webserver" {
+  name                = "${var.prefix}-webserver"
+  resource_group_name = data.azurerm_resource_group.RG1.name
   location            = data.azurerm_resource_group.RG1.location
   size                = "Standard_F2"
   admin_username      = "adminuser"
@@ -42,7 +42,7 @@ resource "azurerm_linux_virtual_machine" "VM1" {
 
   admin_ssh_key {
     username   = "adminuser"
-    public_key = file("~/.ssh/id_rsa.pub")
+    public_key = file("~/.ssh/id_rsa.pub") # use key-valut 
   }
 
   os_disk {
@@ -57,12 +57,12 @@ resource "azurerm_linux_virtual_machine" "VM1" {
     version   = "latest"
   }
    provisioner "file" {
-    source = "./provision-quotes.sh"
+    source = "./provisioner-os-package.sh"
     destination = "~/provisioner-os-package.sh"
   }
   provisioner "remote-exec" {
     inline = [
-      "chmod +x ~/provision.sh",
+      "chmod +x ~/provisioner-os-package.sh",
       "~/provisioner-os-package.sh"
     ]
   }
@@ -75,12 +75,42 @@ resource "azurerm_linux_virtual_machine" "VM1" {
     inline = [
       "mysql -u root -p mysql_secure_installation"
       "mysql -u root -p < ~/db.sql"
-      "wget https://releases.wikimedia.org/mediawiki/1.41/mediawiki-1.41.1.tar.gz"
+      "wget https://releases.wikimedia.org/mediawiki/1.41/mediawiki-1.41.1.tar.gz ."
       "cd /var/www
       "tar -zxf ~/mediawiki-1.41.1.tar.gz"
       "ln -s mediawiki-1.41.1/ mediawiki"
       "chown -R apache:apache /var/www/mediawiki-1.41.1"
       "service httpd restart"
+      "firewall-cmd --permanent --zone=public --add-service=http"
+      "firewall-cmd --permanent --zone=public --add-service=https"
+      "systemctl restart firewalld"
     ]
   }
 }
+resource "azurerm_linux_virtual_machine" "VM-mariadb" {
+  name                = "${var.prefix}-mariadb"
+  resource_group_name = data.azurerm_resource_group.RG1.name
+  location            = data.azurerm_resource_group.RG1.location
+  size                = "Standard_F2"
+  admin_username      = "adminuser"
+
+
+  admin_ssh_key {
+    username   = "adminuser"
+    public_key = file("~/.ssh/id_rsa.pub") # use key-valut 
+  }
+
+  os_disk {
+    caching             = "ReadWrite"
+    storage_account_type = "Standard_LRS"
+  }
+
+  source_image_reference {
+    publisher = "RedHat"
+    offer     = "rhel-byos"
+    sku       = "7-raw"
+    version   = "latest"
+  }
+  
+}
+
