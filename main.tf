@@ -119,15 +119,6 @@ resource "azurerm_linux_virtual_machine" "VM-mariadb" {
     inline = [
       "mysql -u root -p mysql_secure_installation"
       "mysql -u root -p < ~/db.sql"
-      "wget https://releases.wikimedia.org/mediawiki/1.41/mediawiki-1.41.1.tar.gz ."
-      "cd /var/www
-      "tar -zxf ~/mediawiki-1.41.1.tar.gz"
-      "ln -s mediawiki-1.41.1/ mediawiki"
-      "chown -R apache:apache /var/www/mediawiki-1.41.1"
-      "service httpd restart"
-      "firewall-cmd --permanent --zone=public --add-service=http"
-      "firewall-cmd --permanent --zone=public --add-service=https"
-      "systemctl restart firewalld"
     ]
   } 
 }
