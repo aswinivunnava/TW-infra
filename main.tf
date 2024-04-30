@@ -31,6 +31,15 @@ resource "azurerm_subnet" "subnet1" {
   address_prefixes     = ["10.0.1.0/24"]
 }
 
+data "azurerm_key_vault" "TW-KV" {
+  name                = "TW-key-vault"
+  resource_group_name = data.azurerm_resource_group.RG1.name
+}
+
+data "azurerm_key_vault_secret" "ID-RSA-KEY" {
+  name         = "TW-Key"
+  key_vault_id = data.azurerm_key_vault.TW-KV.id
+}
 
 resource "azurerm_linux_virtual_machine" "VM-webserver" {
   name                = "${var.prefix}-webserver"
@@ -42,7 +51,7 @@ resource "azurerm_linux_virtual_machine" "VM-webserver" {
 
   admin_ssh_key {
     username   = "adminuser"
-    public_key = file("~/.ssh/id_rsa.pub") # use key-valut 
+    public_key = data.azurerm_key_vault_secret.ID-RSA-KEY.value
   }
 
   os_disk {
